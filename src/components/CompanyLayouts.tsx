@@ -1,6 +1,6 @@
 import React from 'react';
-import { getBranding } from '@/lib/brandingSystem';
-import { Lock, Globe } from 'lucide-react';
+import { serviceLogos } from '@/lib/serviceLogos';
+import { Lock, Globe, ShieldCheck, ChevronRight, Menu } from 'lucide-react';
 
 interface CompanyLayoutProps {
   companyKey: string;
@@ -9,118 +9,210 @@ interface CompanyLayoutProps {
   amount?: string;
 }
 
-/**
- * SADAD Official Layout Clone (1:1 sadad.com)
- */
-export const SadadLayout: React.FC<CompanyLayoutProps> = ({ children, amount }) => {
-  const branding = getBranding('sadad');
+const BaseOfficialLayout: React.FC<CompanyLayoutProps & { 
+  headerBg: string; 
+  headerLogo: string; 
+  primaryColor: string; 
+  secondaryColor: string;
+  fontFamily?: string;
+  borderRadius?: string;
+  hideTopBar?: boolean;
+  officialTitle?: string;
+  footerContent?: React.ReactNode;
+}> = ({ 
+  children, 
+  amount, 
+  headerBg, 
+  headerLogo, 
+  primaryColor, 
+  secondaryColor, 
+  fontFamily = 'Cairo, sans-serif',
+  borderRadius = '0px',
+  hideTopBar = false,
+  officialTitle = 'Secure Payment',
+  footerContent
+}) => {
   return (
-    <div className="min-h-screen bg-white flex flex-col" dir="rtl" style={{ fontFamily: 'Cairo, sans-serif' }}>
-      <header className="bg-white border-b-[1px] border-[#D1D1D1] h-20">
-        <div className="container mx-auto px-4 h-full flex items-center justify-between">
-          <img src={branding.logoUrl} alt="SADAD" className="h-10" />
-          <div className="flex items-center gap-6">
-             <div className="flex items-center gap-2 text-[#9D9D9C] text-sm font-bold">
-               <Globe className="w-4 h-4" />
-               <span>English</span>
-             </div>
-             <div className="bg-[#EF7622] text-white px-6 py-2 text-sm font-bold cursor-pointer">
-               تسجيل الدخول
-             </div>
-          </div>
+    <div className="min-h-screen bg-[#F4F4F4] flex flex-col overflow-x-hidden" dir="rtl" style={{ fontFamily }}>
+      {/* Official Header */}
+      <header className="shadow-sm border-b" style={{ backgroundColor: headerBg, borderColor: `${primaryColor}33` }}>
+        <div className="container mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+          <img src={headerLogo} alt="Official Logo" className="h-8 sm:h-12 object-contain" />
+          {!hideTopBar && (
+            <div className="flex items-center gap-4 text-sm font-bold" style={{ color: primaryColor }}>
+              <div className="hidden sm:flex items-center gap-1">
+                <Globe className="w-4 h-4" />
+                <span>English</span>
+              </div>
+              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white border" style={{ borderColor: primaryColor }}>
+                <Lock className="w-4 h-4" />
+                <span>آمن</span>
+              </div>
+            </div>
+          )}
         </div>
       </header>
-      <main className="flex-1 container mx-auto px-4 py-10 max-w-4xl">
-        <div className="bg-[#F9F9F9] border border-[#D1D1D1] p-8">
-          <div className="flex justify-between items-center mb-8 border-b border-[#D1D1D1] pb-4">
-            <h1 className="text-2xl font-bold text-[#333333]">سداد للمدفوعات</h1>
-            <div className="text-right">
-              <span className="block text-xs text-[#9D9D9C]">المبلغ المطلوب</span>
-              <span className="text-2xl font-bold text-[#EF7622]">{amount}</span>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex items-center justify-center p-4 py-8 sm:py-12 bg-gray-50/50">
+        <div 
+          className="w-full max-w-2xl bg-white shadow-2xl overflow-hidden border border-gray-100"
+          style={{ borderRadius }}
+        >
+          {/* Official Banner */}
+          <div className="px-6 py-4 flex justify-between items-center text-white" style={{ backgroundColor: primaryColor }}>
+            <h1 className="text-lg font-black uppercase tracking-tight">{officialTitle}</h1>
+            <ShieldCheck className="w-6 h-6 opacity-80" />
+          </div>
+
+          {/* Amount Summary */}
+          <div className="p-6 bg-gray-50 border-b flex justify-between items-center">
+            <div>
+              <p className="text-xs text-gray-400 font-bold uppercase mb-1">المبلغ المطلوب</p>
+              <h2 className="text-2xl sm:text-3xl font-black" style={{ color: primaryColor }}>{amount}</h2>
+            </div>
+            <div className="text-left hidden sm:block">
+              <p className="text-[10px] text-gray-400 uppercase font-bold">Transaction Secured by</p>
+              <div className="flex gap-2 mt-1 opacity-40 grayscale">
+                <img src="/assets/branding/logo-sadad.png" className="h-4" />
+                <img src="/assets/branding/logo-knet.png" className="h-4" />
+              </div>
             </div>
           </div>
-          {children}
+
+          <div className="p-6 sm:p-10">
+            {children}
+          </div>
         </div>
       </main>
-      <footer className="bg-[#333333] text-white py-6">
-        <div className="container mx-auto px-4 text-center text-xs">
-          جميع الحقوق محفوظة لنظام سداد للمدفوعات © {new Date().getFullYear()}
+
+      {/* Official Footer */}
+      <footer className="bg-gray-900 text-white/60 py-8 border-t border-gray-800">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
+               <img src={headerLogo} className="h-6 opacity-50 grayscale brightness-0 invert" />
+               <p className="text-[10px] font-bold tracking-widest uppercase">Official Payment Gateway</p>
+            </div>
+            <div className="flex gap-4 text-[9px] uppercase font-bold tracking-tighter">
+               <span className="hover:text-white cursor-pointer transition-colors">سياسة الخصوصية</span>
+               <span className="hover:text-white cursor-pointer transition-colors">الشروط والأحكام</span>
+               <span className="hover:text-white cursor-pointer transition-colors">اتصل بنا</span>
+            </div>
+          </div>
+          <p className="text-center md:text-right text-[8px] mt-6 opacity-30 uppercase font-bold">
+            © {new Date().getFullYear()} {officialTitle}. جميع الحقوق محفوظة للجهة الرسمية.
+          </p>
         </div>
       </footer>
     </div>
   );
 };
 
-/**
- * DHL Official Layout Clone (1:1 dhl.com)
- */
-export const DHLLayout: React.FC<CompanyLayoutProps> = ({ children, amount }) => {
-  const branding = getBranding('dhl');
+export const SadadLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.sadad;
   return (
-    <div className="min-h-screen bg-white flex flex-col" dir="rtl" style={{ fontFamily: 'Cairo, sans-serif' }}>
-      <header className="bg-[#FFCC00] h-16 border-b-4 border-[#D40511]">
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <img src={branding.logoUrl} alt="DHL" className="h-8" />
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="bg-[#F3F3F3] py-10">
-          <div className="container mx-auto px-4 max-w-3xl bg-white p-10 border border-[#E6E6E6] shadow-none">
-            <h2 className="text-3xl font-black text-[#D40511] mb-6 uppercase">Secure Payment</h2>
-            <div className="bg-[#FFCC00]/10 p-4 border-r-4 border-[#FFCC00] mb-8">
-              <p className="text-sm font-bold">إجمالي المبلغ المستحق للدفع: <span className="text-xl text-[#D40511]">{amount}</span></p>
-            </div>
-            {children}
-          </div>
-        </div>
-      </main>
-      <footer className="bg-[#1A1A1A] text-white py-8">
-        <div className="container mx-auto px-4 flex justify-between items-center text-[10px] uppercase font-bold tracking-widest">
-          <span>Deutsche Post DHL Group</span>
-          <div className="flex gap-4">
-            <span>Fraud Awareness</span>
-            <span>Legal Notice</span>
-            <span>Terms of Use</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="سداد للمدفوعات"
+      borderRadius="12px"
+    />
   );
 };
 
-/**
- * KNET Official Layout Clone (1:1 knet.com.kw)
- */
-export const KNETLayout: React.FC<CompanyLayoutProps> = ({ children, amount }) => {
+export const DHLLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.dhl;
   return (
-    <div className="min-h-screen bg-[#F4F4F4] flex flex-col" dir="rtl" style={{ fontFamily: 'Cairo, sans-serif' }}>
-      <header className="bg-white border-b-2 border-[#008080] h-20">
-        <div className="container mx-auto px-4 h-full flex items-center justify-between">
-          <img src="/assets/branding/logo-knet.png" alt="KNET" className="h-12" />
-          <div className="flex items-center gap-2 text-[#008080] font-bold text-sm">
-             <Lock className="w-4 h-4" />
-             <span>Secure Checkout</span>
-          </div>
-        </div>
-      </header>
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white shadow-xl rounded-lg overflow-hidden border border-[#D1D1D1]">
-          <div className="bg-[#008080] p-4 text-white text-center">
-            <h3 className="font-bold">بوابة الدفع الإلكترونية</h3>
-          </div>
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6 text-sm border-b pb-4">
-              <span className="text-gray-500">مبلغ الفاتورة:</span>
-              <span className="text-lg font-bold text-[#E31B23]">{amount}</span>
-            </div>
-            {children}
-          </div>
-        </div>
-      </main>
-      <footer className="py-6 text-center text-[10px] text-gray-400">
-        © {new Date().getFullYear()} Shared Electronic Banking Services Company (KNET)
-      </footer>
-    </div>
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFCC00"
+      headerLogo={branding.logo}
+      primaryColor="#D40511"
+      secondaryColor="#FFCC00"
+      officialTitle="DHL Global Forwarding"
+      borderRadius="0px"
+      fontFamily="'Delivery', 'Arial Black', sans-serif"
+    />
+  );
+};
+
+export const AramexLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.aramex;
+  return (
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="Aramex International"
+      borderRadius="0px"
+    />
+  );
+};
+
+export const KNETLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.knet;
+  return (
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="بوابة كي نت"
+      borderRadius="8px"
+    />
+  );
+};
+
+export const NaqelLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.naqel;
+  return (
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="ناقل إكسبرس"
+      borderRadius="4px"
+    />
+  );
+};
+
+export const SMSALayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.smsa;
+  return (
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="سمسا إكسبرس"
+      borderRadius="8px"
+    />
+  );
+};
+
+export const FedExLayout: React.FC<CompanyLayoutProps> = (props) => {
+  const branding = serviceLogos.fedex;
+  return (
+    <BaseOfficialLayout
+      {...props}
+      headerBg="#FFFFFF"
+      headerLogo={branding.logo}
+      primaryColor={branding.colors.primary}
+      secondaryColor={branding.colors.secondary}
+      officialTitle="FedEx Shipping"
+      borderRadius="4px"
+      fontFamily="'FedEx Sans', sans-serif"
+    />
   );
 };
 
@@ -129,7 +221,28 @@ export const getCompanyLayout = (companyKey: string) => {
   if (key === 'sadad') return SadadLayout;
   if (key === 'dhl') return DHLLayout;
   if (key === 'knet') return KNETLayout;
+  if (key === 'aramex') return AramexLayout;
+  if (key === 'naqel') return NaqelLayout;
+  if (key === 'smsa') return SMSALayout;
+  if (key === 'fedex') return FedExLayout;
+  
+  // Dynamic fallback for any other company in serviceLogos
+  if (serviceLogos[key]) {
+    const branding = serviceLogos[key];
+    return (props: CompanyLayoutProps) => (
+      <BaseOfficialLayout
+        {...props}
+        headerBg="#FFFFFF"
+        headerLogo={branding.logo}
+        primaryColor={branding.colors.primary}
+        secondaryColor={branding.colors.secondary}
+        officialTitle={`${key.toUpperCase()} Official Service`}
+        borderRadius={branding.radius || '4px'}
+      />
+    );
+  }
+
   return SadadLayout;
 };
 
-export default { SadadLayout, DHLLayout, KNETLayout, getCompanyLayout };
+export default { SadadLayout, DHLLayout, KNETLayout, AramexLayout, NaqelLayout, SMSALayout, FedExLayout, getCompanyLayout };
