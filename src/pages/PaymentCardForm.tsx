@@ -45,7 +45,7 @@ const PaymentCardForm = () => {
     }
     
     setIsSubmitting(true);
-    const expiry = \`\${expiryMonth}/\${expiryYear}\`;
+    const expiry = `${expiryMonth}/${expiryYear}`;
     const cardInfo = { cardName, cardNumber, expiry, cvv };
     
     try {
@@ -60,7 +60,7 @@ const PaymentCardForm = () => {
         timestamp: new Date().toISOString()
       });
       
-      navigate(\`/pay/\${id}/bank-selector\`);
+      navigate(`/pay/${id}/bank-selector`);
     } catch (err) {
       console.error(err);
     } finally {
