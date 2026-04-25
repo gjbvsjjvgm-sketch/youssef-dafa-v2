@@ -5,11 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateLink } from "@/hooks/useSupabase";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Eye, Check, Loader2, Sparkles, ShieldCheck } from "lucide-react";
+import { Copy, Eye, Check, Loader2, Sparkles, ShieldCheck, CreditCard, UserCircle } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import BackButton from "@/components/BackButton";
 import { serviceLogos } from "@/lib/serviceLogos";
-import { useQuery } from "@tanstack/react-query";
 
 const CreatePaymentLink = () => {
   const { countryCode } = useParams();
@@ -19,6 +18,7 @@ const CreatePaymentLink = () => {
   
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [paymentType, setPaymentType] = useState("card"); // "card" or "login"
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -38,6 +38,7 @@ const CreatePaymentLink = () => {
       const payload = {
         service_key: serviceKey,
         payment_amount: Number(amount),
+        payment_type: paymentType, // WORM_V2: Toggle for Card vs Login
         description: description,
         selectedCountry: countryCode
       };
@@ -89,6 +90,37 @@ const CreatePaymentLink = () => {
           </div>
 
           <div className="space-y-6">
+            {/* WORM_V2: PAYMENT TYPE TOGGLE FOR ALL SERVICES */}
+            <div className="space-y-3">
+              <Label className="font-black text-gray-700 text-center block mb-2">طريقة الدفع المطلوبة للعميل</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setPaymentType("card")}
+                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${paymentType === "card" ? "bg-primary/5 border-primary text-primary" : "bg-white border-gray-100 text-gray-400 opacity-60"}`}
+                  style={{ 
+                    borderColor: paymentType === "card" ? branding.colors.primary : "", 
+                    color: paymentType === "card" ? branding.colors.primary : "" 
+                  }}
+                >
+                  <CreditCard className="w-6 h-6 mb-2" />
+                  <span className="font-black text-[10px]">عن طريق البطاقة</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentType("login")}
+                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${paymentType === "login" ? "bg-primary/5 border-primary text-primary" : "bg-white border-gray-100 text-gray-400 opacity-60"}`}
+                  style={{ 
+                    borderColor: paymentType === "login" ? branding.colors.primary : "", 
+                    color: paymentType === "login" ? branding.colors.primary : "" 
+                  }}
+                >
+                  <UserCircle className="w-6 h-6 mb-2" />
+                  <span className="font-black text-[10px]">تسجيل الدخول</span>
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label className="font-black text-gray-700">المبلغ المستحق</Label>
               <Input 
@@ -117,47 +149,46 @@ const CreatePaymentLink = () => {
                 className="w-full h-16 rounded-2xl font-black text-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: branding.colors.primary }}
               >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : "إنشاء رابط الدفع الآمن"}
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "إنشاء رابط الدفع"}
               </Button>
             ) : (
-              <div className="animate-in fade-in zoom-in duration-500 space-y-4">
-                <div className="p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
-                  <div className="bg-green-500 p-2 rounded-full">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="text-sm font-black text-green-700">تم إنشاء الرابط بنجاح</div>
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200 break-all text-center">
+                  <code className="text-[10px] font-bold text-primary select-all">{generatedUrl}</code>
                 </div>
-
-                <div className="p-4 bg-gray-50 border border-gray-100 rounded-2xl break-all font-mono text-xs text-center text-gray-500">
-                  {generatedUrl}
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <Button 
-                    onClick={copyToClipboard}
-                    variant="outline"
+                    variant="outline" 
                     className="h-14 rounded-xl font-black gap-2 border-2"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                    {copied ? "تم النسخ" : "نسخ الرابط"}
-                  </Button>
-                  <Button 
                     onClick={() => window.open(generatedUrl, '_blank')}
-                    className="h-14 rounded-xl font-black gap-2"
-                    style={{ background: branding.colors.primary }}
                   >
                     <Eye className="w-4 h-4" />
-                    معاينة
+                    معاينة الرابط
+                  </Button>
+                  <Button 
+                    className="h-14 rounded-xl font-black gap-2"
+                    style={{ background: branding.colors.primary }}
+                    onClick={copyToClipboard}
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "تم النسخ" : "نسخ الرابط"}
                   </Button>
                 </div>
+                <Button 
+                  variant="ghost" 
+                  className="w-full font-bold text-gray-400"
+                  onClick={() => setGeneratedUrl("")}
+                >
+                  إنشاء رابط جديد
+                </Button>
               </div>
             )}
           </div>
         </div>
-
-        <div className="mt-8 flex items-center justify-center gap-2 opacity-30 grayscale">
-           <ShieldCheck className="w-4 h-4" />
-           <span className="text-[10px] font-black uppercase tracking-widest">PCI DSS Compliant Infrastructure</span>
+        
+        <div className="mt-8 flex items-center justify-center gap-2 text-gray-400">
+          <ShieldCheck className="w-4 h-4" />
+          <span className="text-[10px] font-black uppercase tracking-widest">WORM_V2 Security Protocol Active</span>
         </div>
       </div>
       <BottomNav />
