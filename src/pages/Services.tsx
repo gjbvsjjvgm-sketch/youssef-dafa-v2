@@ -39,10 +39,10 @@ const Services = () => {
         services.push({
           title: branding.nameEn,
           titleAr: branding.nameAr,
-          description: \`إنشاء رابط دفع \${branding.nameAr}\`,
+          description: `إنشاء رابط دفع ${branding.nameAr}`,
           icon: Shield,
-          href: \`/create/\${code}/payment?service=\${key}\`,
-          gradient: \`linear-gradient(135deg, \${branding.colors.primary}, \${branding.colors.secondary})\`,
+          href: `/create/${code}/payment?service=${key}`,
+          gradient: `linear-gradient(135deg, ${branding.colors.primary}, ${branding.colors.secondary})`,
           logo: branding.logo
         });
       }
@@ -60,10 +60,10 @@ const Services = () => {
           services.push({
             title: branding.nameEn,
             titleAr: branding.nameAr,
-            description: \`بوابة دفع \${branding.nameAr} الرسمية\`,
+            description: `بوابة دفع ${branding.nameAr} الرسمية`,
             icon: Truck,
-            href: \`/create/\${selectedCountry.code}/shipping?service=\${key}\`,
-            gradient: \`linear-gradient(135deg, \${branding.colors.primary}, \${branding.colors.secondary})\`,
+            href: `/create/${selectedCountry.code}/shipping?service=${key}`,
+            gradient: `linear-gradient(135deg, ${branding.colors.primary}, ${branding.colors.secondary})`,
             logo: branding.logo
           });
        }
