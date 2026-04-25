@@ -4,93 +4,66 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
     --primary: 45 98% 58%;
-    --primary-foreground: 220 25% 8%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 45 98% 58%;
-    --accent-foreground: 220 25% 8%;
-    --destructive: 0 85% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 45 98% 58%;
-    --radius: 0.875rem;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    /* WORM_V2 Default Official Vars */
+    --dynamic-primary: #EF7622;
+    --dynamic-button-radius: 0px;
+    --dynamic-font-primary: 'Cairo', sans-serif;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  /* WORM_V2: ABSOLUTE BUTTON TRANSFORMATION */
+  button, 
+  .btn,
+  [role="button"] {
+    background-color: var(--dynamic-primary) !important;
+    border-radius: var(--dynamic-button-radius) !important;
+    font-family: var(--dynamic-font-primary) !important;
+    text-transform: uppercase !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: none !important;
   }
 
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Cairo', 'Almarai', sans-serif;
+  button:hover {
+    filter: brightness(0.9);
+    transform: translateY(-1px);
   }
 
-  /* WORM_V2: Global Button Overrides for Official Identity */
-  button, .btn {
-    @apply transition-all duration-200 active:scale-95;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-
-  /* WORM_V2: Official Image Handling */
+  /* WORM_V2: PIXEL-PERFECT OFFICIAL IMAGES */
   img {
-    @apply transition-opacity duration-500;
     max-width: 100%;
     height: auto;
-  }
-
-  /* Official Entity Specific Button Styles */
-  [data-entity="sadad"] button {
-    border-radius: 0px !important;
-    font-weight: 700;
-  }
-
-  [data-entity="dhl"] button {
-    border-radius: 0px !important;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  [data-entity="knet"] button {
-    border-radius: 4px !important;
-  }
-
-  /* 1:1 Image Rendering for Logos */
-  .official-logo {
-    filter: drop-shadow(0 0 0 transparent);
+    object-fit: contain;
     image-rendering: -webkit-optimize-contrast;
   }
 
-  /* Background Hero Clones */
-  .hero-clone {
-    background-size: cover;
-    background-position: center;
-    image-rendering: crisp-edges;
+  /* Official Header Logo Logic */
+  header img {
+    height: 3.5rem !important;
+    max-width: 200px !important;
+  }
+
+  /* Input Clones */
+  input {
+    border-radius: 0px !important;
+    border: 2px solid #E5E7EB !important;
+  }
+
+  input:focus {
+    border-color: var(--dynamic-primary) !important;
+    outline: none !important;
+    box-shadow: none !important;
   }
 }
 
 @layer utilities {
-  .pixel-perfect-shadow {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  }
-
-  .no-rounding {
-    border-radius: 0 !important;
-  }
-
-  .official-font {
-    font-feature-settings: "ss01", "ss02", "cv01";
+  .official-shadow {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
   }
 }
