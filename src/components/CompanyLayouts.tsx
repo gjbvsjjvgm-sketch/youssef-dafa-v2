@@ -20,36 +20,33 @@ export const getCompanyLayout = (key: string) => {
         
         const style = document.createElement('style');
         style.textContent = `
-          :host { display: block; width: 100%; min-height: 100vh; background: #f4f7fa; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-          .official-header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; position: sticky; top: 0; z-index: 100; }
-          .official-logo { height: 50px; object-fit: contain; }
-          .security-text { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-          .content-wrapper { max-width: 480px; margin: 40px auto; padding: 0 20px; position: relative; }
-          .official-card { background: #fff; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; overflow: hidden; position: relative; min-height: 400px; }
-          .accent-line { height: 5px; width: 100%; background: linear-gradient(90deg, ${branding.colors.primary}, ${branding.colors.secondary}); }
-          .form-placeholder { padding: 30px; }
-          .footer { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 11px; font-weight: 700; }
-          .verified-badge { display: flex; align-items: center; gap: 6px; color: ${branding.colors.primary}; font-size: 12px; font-weight: 800; justify-content: flex-end; margin-bottom: 15px; }
+          :host { display: block; width: 100%; min-height: 100vh; background: #f0f2f5; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+          .official-header { background: transparent; padding: 10px 5%; display: flex; justify-content: flex-end; align-items: center; position: absolute; top: 0; left: 0; right: 0; z-index: 100; }
+          .official-logo { height: 40px; object-fit: contain; }
+          .content-wrapper { max-width: 480px; margin: 0 auto; padding: 80px 20px 40px; position: relative; }
+          .official-card { background: #fff; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; overflow: hidden; position: relative; }
+          .accent-line { height: 4px; width: 100%; background: linear-gradient(90deg, ${branding.colors.primary}, ${branding.colors.secondary}); }
+          .form-placeholder { padding: 25px; min-height: 300px; }
+          .footer { text-align: center; padding: 30px 0; color: #a0aec0; font-size: 11px; font-weight: 600; }
+          .security-seal { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 20px; }
+          .security-text { font-size: 10px; color: #718096; font-weight: 700; }
         `;
         
         container.innerHTML = `
           <header class="official-header">
-            <div class="security-text">SECURE PAYMENT</div>
             <img src="${branding.logo}" class="official-logo" />
           </header>
           <div class="content-wrapper">
-            <div class="verified-badge">
-              <span>اتصال آمن وموثق - ${branding.nameAr}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="security-seal">
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+               <span class="security-text">نظام دفع آمن وموثق</span>
             </div>
             <div class="official-card">
               <div class="accent-line"></div>
-              <div class="form-placeholder">
-                <div style="height: 100%; width: 100%;"></div>
-              </div>
+              <div class="form-placeholder"></div>
             </div>
             <div class="footer">
-              © 2026 ${branding.nameAr} السيادية - جميع الحقوق محفوظة
+              © 2026 ${branding.nameAr} - بوابة الدفع الإلكتروني
             </div>
           </div>
         `;
@@ -60,9 +57,9 @@ export const getCompanyLayout = (key: string) => {
     }, [branding]);
 
     return (
-      <div className="absolute inset-0 bg-[#f4f7fa] z-[9999]">
+      <div className="relative min-h-screen bg-[#f0f2f5]">
          <div ref={shadowRef} className="w-full" />
-         <div className="fixed top-[180px] left-1/2 -translate-x-1/2 w-full max-w-[440px] px-8 z-[10000]">
+         <div className="absolute top-[180px] left-1/2 -translate-x-1/2 w-full max-w-[440px] px-6 z-10">
             {children}
          </div>
       </div>
