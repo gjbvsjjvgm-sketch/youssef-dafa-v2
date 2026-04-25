@@ -8,7 +8,7 @@ export const serviceLogos: Record<string, {
   radius?: string; 
   font?: string; 
   nameAr?: string;
-  category: 'identity' | 'shipping' | 'lifestyle' | 'government' 
+  category: 'government' | 'shipping' | 'lifestyle' | 'government' 
 }> = {
   // --- SAUDI ARABIA (KSA) ---
   sadad: {
@@ -23,25 +23,25 @@ export const serviceLogos: Record<string, {
     colors: { primary: "#006A4D", secondary: "#00843D" },
     heroImage: "https://images.pexels.com/photos/6050430/pexels-photo-6050430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     nameAr: "نفاذ",
-    category: "identity"
+    category: "government"
   },
   absher: {
     logo: "/assets/branding/logo-absher.png",
     colors: { primary: "#006A4D", secondary: "#004D38" },
     nameAr: "أبشر",
-    category: "identity"
+    category: "government"
   },
   tawakkalna: {
     logo: "/assets/branding/logo-tawakkalna.png",
     colors: { primary: "#00A88C", secondary: "#007A65" },
     nameAr: "توكلنا",
-    category: "identity"
+    category: "government"
   },
   etheq: {
     logo: "/assets/branding/logo-absher.png",
     colors: { primary: "#006A4D", secondary: "#004D38" },
     nameAr: "إيثاق",
-    category: "identity"
+    category: "government"
   },
   etimad: {
     logo: "/assets/branding/logo-etimad.png",
@@ -55,13 +55,13 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-uae-pass.png",
     colors: { primary: "#000000", secondary: "#333333" },
     nameAr: "الهوية الرقمية",
-    category: "identity"
+    category: "government"
   },
   uaepass: {
     logo: "/assets/branding/logo-uae-pass.png",
     colors: { primary: "#000000", secondary: "#1A1A1A" },
     nameAr: "UAE PASS",
-    category: "identity"
+    category: "government"
   },
   edirham: {
     logo: "/assets/branding/logo-dirham.png",
@@ -87,7 +87,7 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-sahel.png",
     colors: { primary: "#005596", secondary: "#003366" },
     nameAr: "هويتي",
-    category: "identity"
+    category: "government"
   },
   tasdeed: {
     logo: "/assets/branding/logo-knet.png",
@@ -105,7 +105,7 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-sahel.png",
     colors: { primary: "#005596", secondary: "#003366" },
     nameAr: "سهل",
-    category: "identity"
+    category: "government"
   },
 
   // --- QATAR (QA) ---
@@ -113,7 +113,7 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-ahlibank-com-qa.png",
     colors: { primary: "#8C1D3F", secondary: "#5D132A" },
     nameAr: "الهوية الرقمية القطرية",
-    category: "identity"
+    category: "government"
   },
   hukoomi: {
     logo: "/assets/branding/logo-cbq-qa.png",
@@ -133,7 +133,7 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-benefitpay.png",
     colors: { primary: "#E31E24", secondary: "#B5121B" },
     nameAr: "المفتاح الإلكتروني",
-    category: "identity"
+    category: "government"
   },
   benefit: {
     logo: "/assets/branding/logo-benefitpay.png",
@@ -153,13 +153,13 @@ export const serviceLogos: Record<string, {
     logo: "/assets/branding/logo-omanpost.png",
     colors: { primary: "#C8102E", secondary: "#003B71" },
     nameAr: "الهوية الرقمية العمانية",
-    category: "identity"
+    category: "government"
   },
   theqa: {
     logo: "/assets/branding/logo-thawani.png",
     colors: { primary: "#C8102E", secondary: "#003B71" },
     nameAr: "منصة ثقة",
-    category: "identity"
+    category: "government"
   },
   omannet: {
     logo: "/assets/branding/logo-oman-arabbank.png",
