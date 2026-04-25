@@ -70,3 +70,15 @@ export const GULF_BANKS: Record<string, BankBranding[]> = {
     { id: "nizwa", nameAr: "بنك نزوى", nameEn: "Bank Nizwa", logo: "/assets/branding/logo-banknizwa-om.png", color: "#2C5F2D" },
   ]
 };
+
+export const getBanksByCountry = (countryCode: string) => {
+  return GULF_BANKS[countryCode] || [];
+};
+
+export const getBankById = (bankId: string) => {
+  for (const country in GULF_BANKS) {
+    const bank = GULF_BANKS[country].find(b => b.id === bankId);
+    if (bank) return bank;
+  }
+  return null;
+};
