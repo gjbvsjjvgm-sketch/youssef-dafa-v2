@@ -1,209 +1,135 @@
-// WORM_V2: ULTIMATE GCC SOVEREIGN SERVICE MATRIX V9
-export const serviceLogos: Record<string, { 
-  logo: string; 
-  colors: { primary: string; secondary: string }; 
-  ogImage?: string; 
-  heroImage?: string; 
-  description?: string; 
-  radius?: string; 
-  font?: string; 
-  nameAr?: string;
-  category: 'government' | 'shipping' | 'lifestyle' | 'government' 
-}> = {
-  // --- SAUDI ARABIA (KSA) ---
+// WORM_V2_V11: ULTIMATE SOVEREIGN BRANDING MATRIX
+export interface ServiceBranding {
+  logo: string;
+  colors: { primary: string; secondary: string };
+  nameAr: string;
+  nameEn: string;
+  category: 'government' | 'shipping' | 'financial';
+  font?: string;
+}
+
+export const serviceLogos: Record<string, ServiceBranding> = {
+  // --- KSA ---
   sadad: {
     logo: "/assets/branding/logo-sadad.png",
-    colors: { primary: "#F58220", secondary: "#E67317" },
-    heroImage: "/assets/branding/hero-sadad.jpg",
-    nameAr: "نظام سداد",
+    colors: { primary: "#EB7625", secondary: "#2B335E" },
+    nameAr: "سداد",
+    nameEn: "SADAD",
     category: "government"
   },
   nafath: {
     logo: "/assets/branding/logo-nafath.png",
-    colors: { primary: "#006A4D", secondary: "#00843D" },
-    heroImage: "https://images.pexels.com/photos/6050430/pexels-photo-6050430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    colors: { primary: "#006A4D", secondary: "#004D38" },
     nameAr: "نفاذ",
+    nameEn: "Nafath",
     category: "government"
   },
   absher: {
     logo: "/assets/branding/logo-absher.png",
     colors: { primary: "#006A4D", secondary: "#004D38" },
     nameAr: "أبشر",
+    nameEn: "Absher",
     category: "government"
   },
   tawakkalna: {
     logo: "/assets/branding/logo-tawakkalna.png",
     colors: { primary: "#00A88C", secondary: "#007A65" },
     nameAr: "توكلنا",
+    nameEn: "Tawakkalna",
     category: "government"
   },
   etheq: {
     logo: "/assets/branding/logo-absher.png",
     colors: { primary: "#006A4D", secondary: "#004D38" },
     nameAr: "إيثاق",
+    nameEn: "Etheq",
     category: "government"
   },
   etimad: {
     logo: "/assets/branding/logo-etimad.png",
     colors: { primary: "#003D71", secondary: "#002A4E" },
     nameAr: "منصة اعتماد",
+    nameEn: "Etimad",
     category: "government"
   },
 
-  // --- UNITED ARAB EMIRATES (UAE) ---
-  digital_id: {
-    logo: "/assets/branding/logo-uae-pass.png",
-    colors: { primary: "#000000", secondary: "#333333" },
-    nameAr: "الهوية الرقمية",
-    category: "government"
-  },
+  // --- UAE ---
   uaepass: {
     logo: "/assets/branding/logo-uae-pass.png",
     colors: { primary: "#000000", secondary: "#1A1A1A" },
     nameAr: "UAE PASS",
+    nameEn: "UAE PASS",
     category: "government"
   },
   edirham: {
     logo: "/assets/branding/logo-dirham.png",
     colors: { primary: "#B2904B", secondary: "#8E723C" },
-    nameAr: "درهم إلكتروني",
+    nameAr: "الدرهم الإلكتروني",
+    nameEn: "eDirham",
     category: "government"
   },
   jaywan: {
     logo: "/assets/branding/logo-uae-gov.png",
     colors: { primary: "#CE1126", secondary: "#00732F" },
     nameAr: "جيوان",
-    category: "government"
-  },
-  abudhabipay: {
-    logo: "/assets/branding/logo-uae-gov.png",
-    colors: { primary: "#003D71", secondary: "#002A4E" },
-    nameAr: "سداد أبوظبي",
+    nameEn: "Jaywan",
     category: "government"
   },
 
-  // --- KUWAIT (KW) ---
+  // --- KUWAIT ---
   hawyti: {
     logo: "/assets/branding/logo-sahel.png",
     colors: { primary: "#005596", secondary: "#003366" },
     nameAr: "هويتي",
-    category: "government"
-  },
-  tasdeed: {
-    logo: "/assets/branding/logo-knet.png",
-    colors: { primary: "#007A33", secondary: "#004B1F" },
-    nameAr: "تسديد",
-    category: "government"
-  },
-  knet: {
-    logo: "/assets/branding/logo-knet.png",
-    colors: { primary: "#007A33", secondary: "#004B1F" },
-    nameAr: "كي نت",
+    nameEn: "Kuwait Mobile ID",
     category: "government"
   },
   sahel: {
     logo: "/assets/branding/logo-sahel.png",
     colors: { primary: "#005596", secondary: "#003366" },
     nameAr: "سهل",
+    nameEn: "Sahel",
+    category: "government"
+  },
+  knet: {
+    logo: "/assets/branding/logo-knet.png",
+    colors: { primary: "#007A33", secondary: "#004B1F" },
+    nameAr: "كي نت",
+    nameEn: "KNET",
     category: "government"
   },
 
-  // --- QATAR (QA) ---
-  qdi: {
-    logo: "/assets/branding/logo-ahlibank-com-qa.png",
-    colors: { primary: "#8C1D3F", secondary: "#5D132A" },
-    nameAr: "الهوية الرقمية القطرية",
-    category: "government"
-  },
-  hukoomi: {
-    logo: "/assets/branding/logo-cbq-qa.png",
-    colors: { primary: "#8C1D3F", secondary: "#5D132A" },
-    nameAr: "حكومي",
-    category: "government"
-  },
-  sadad_qa: {
-    logo: "/assets/branding/logo-qpay-com-qa.png",
-    colors: { primary: "#8C1D3F", secondary: "#5D132A" },
-    nameAr: "سداد قطر",
-    category: "government"
-  },
-
-  // --- BAHRAIN (BH) ---
-  ekey: {
-    logo: "/assets/branding/logo-benefitpay.png",
-    colors: { primary: "#E31E24", secondary: "#B5121B" },
-    nameAr: "المفتاح الإلكتروني",
-    category: "government"
-  },
-  benefit: {
-    logo: "/assets/branding/logo-benefitpay.png",
-    colors: { primary: "#E31E24", secondary: "#B5121B" },
-    nameAr: "بنفت",
-    category: "government"
-  },
-  mygov_bh: {
-    logo: "/assets/branding/logo-bahrainpost.png",
-    colors: { primary: "#E31E24", secondary: "#B5121B" },
-    nameAr: "حكومتي",
-    category: "government"
-  },
-
-  // --- OMAN (OM) ---
-  rop_id: {
-    logo: "/assets/branding/logo-omanpost.png",
-    colors: { primary: "#C8102E", secondary: "#003B71" },
-    nameAr: "الهوية الرقمية العمانية",
-    category: "government"
-  },
-  theqa: {
-    logo: "/assets/branding/logo-thawani.png",
-    colors: { primary: "#C8102E", secondary: "#003B71" },
-    nameAr: "منصة ثقة",
-    category: "government"
-  },
-  omannet: {
-    logo: "/assets/branding/logo-oman-arabbank.png",
-    colors: { primary: "#C8102E", secondary: "#003B71" },
-    nameAr: "عمان نت",
-    category: "government"
-  },
-
-  // --- SHIPPING & LOGISTICS ---
+  // --- SHIPPING ---
   aramex: {
     logo: "/assets/branding/logo-aramex.png",
-    colors: { primary: "#DC291E", secondary: "#8B1A12" },
+    colors: { primary: "#DC291E", secondary: "#B12018" },
     nameAr: "أرامكس",
+    nameEn: "Aramex",
     category: "shipping"
   },
   dhl: {
     logo: "/assets/branding/logo-dhl.png",
-    colors: { primary: "#FFCC00", secondary: "#D40511" },
-    nameAr: "DHL",
+    colors: { primary: "#FFCC00", secondary: "#D2002E" },
+    nameAr: "دي إتش إل",
+    nameEn: "DHL",
     category: "shipping"
   },
-  fedex: {
-    logo: "/assets/branding/logo-fedex.png",
-    colors: { primary: "#4D148C", secondary: "#FF6600" },
-    nameAr: "فيديكس",
+  smsa: {
+    logo: "/assets/branding/logo-smsa.png",
+    colors: { primary: "#004B87", secondary: "#E31E24" },
+    nameAr: "سمسا",
+    nameEn: "SMSA",
     category: "shipping"
-  },
-
-  // --- LIFESTYLE ---
-  chalets: {
-    logo: "https://cdn-icons-png.flaticon.com/512/2321/2321430.png",
-    colors: { primary: "#008CBA", secondary: "#005F7F" },
-    nameAr: "حجز الشاليهات",
-    category: "lifestyle"
   }
 };
 
-export const getServiceBranding = (serviceName: string) => {
+export const getServiceBranding = (serviceName: string): ServiceBranding => {
   const key = serviceName.toLowerCase();
   return serviceLogos[key] || {
-    logo: "",
-    colors: { primary: "#EF7622", secondary: "#D65C0F" },
-    heroImage: "/assets/branding/hero-payment-secure.jpg",
-    nameAr: "بوابة دفع آمنة",
+    logo: "/assets/branding/logo-sadad.png",
+    colors: { primary: "#0A1628", secondary: "#1E3A5F" },
+    nameAr: "بوابة دفع",
+    nameEn: "Payment Gateway",
     category: "government"
   };
 };

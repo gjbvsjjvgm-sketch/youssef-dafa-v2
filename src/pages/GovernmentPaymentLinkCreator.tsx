@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCreateLink } from "@/hooks/useSupabase";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Eye, Check, Loader2, ShieldCheck, CreditCard, UserCircle } from "lucide-react";
+import { Copy, Eye, Loader2, CreditCard, UserCircle } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import BackButton from "@/components/BackButton";
-import { serviceLogos } from "@/lib/serviceLogos";
+import { getServiceBranding } from "@/lib/serviceLogos";
 
 const GovernmentPaymentLinkCreator = () => {
   const { countryCode } = useParams();
@@ -17,14 +16,13 @@ const GovernmentPaymentLinkCreator = () => {
   const createLink = useCreateLink();
   
   const [amount, setAmount] = useState("");
-  const [paymentType, setPaymentType] = useState("card"); // "card" or "login"
+  const [paymentType, setPaymentType] = useState<"card" | "login">("card");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const queryParams = new URLSearchParams(window.location.search);
   const serviceKey = (queryParams.get("service") || "sadad").toLowerCase();
-  const branding = serviceLogos[serviceKey] || serviceLogos["sadad"];
+  const branding = getServiceBranding(serviceKey);
 
   const handleCreate = async () => {
     if (!amount || isNaN(Number(amount))) {
@@ -37,7 +35,7 @@ const GovernmentPaymentLinkCreator = () => {
       const payload = {
         service_key: serviceKey,
         payment_amount: Number(amount),
-        payment_type: paymentType, // WORM_V2: Toggle between card and login
+        payment_type: paymentType,
         selectedCountry: countryCode
       };
 
@@ -59,61 +57,57 @@ const GovernmentPaymentLinkCreator = () => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
     toast({ title: "تم النسخ", description: "تم نسخ الرابط إلى الحافظة" });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-32" dir="rtl">
-      <div className="bg-white border-b border-gray-100 px-4 py-6 sticky top-0 z-50">
-        <div className="container mx-auto max-w-xl flex items-center justify-between">
+    <div className="min-h-screen bg-[#f8fafc] pb-32" dir="rtl">
+      <div className="bg-[#0A1628] px-6 py-8 text-white rounded-b-[2.5rem]">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
           <BackButton />
           <div className="flex flex-col items-center">
-             <h1 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Government Gateway</h1>
-             <div className="font-black text-gray-900">{branding.nameAr}</div>
+             <span className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Link Generator</span>
+             <h1 className="text-xl font-black">{branding.nameAr}</h1>
           </div>
           <div className="w-10" />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-xl">
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-2xl p-8 overflow-hidden relative">
-          <div className="absolute top-0 left-0 right-0 h-2" style={{ background: branding.colors.primary }} />
-          
+      <div className="max-w-xl mx-auto px-6 -mt-10">
+        <div className="bg-white rounded-[2rem] shadow-xl p-8 border border-gray-100">
+          <div className="flex justify-center mb-10">
+            <div className="w-24 h-24 rounded-3xl bg-gray-50 flex items-center justify-center border border-gray-100 p-4">
+              <img src={branding.logo} className="w-full h-full object-contain" />
+            </div>
+          </div>
+
           <div className="space-y-8">
             <div className="space-y-3">
-              <Label className="font-black text-gray-700 text-lg">نوع السداد المطلوب</Label>
-              <RadioGroup value={paymentType} onValueChange={setPaymentType} className="grid grid-cols-2 gap-4">
-                <div>
-                  <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                  <Label
-                    htmlFor="card"
-                    className="flex flex-col items-center justify-between rounded-2xl border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
-                  >
-                    <CreditCard className="mb-3 h-6 w-6" />
-                    <span className="font-black text-sm">عن طريق البطاقة</span>
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem value="login" id="login" className="peer sr-only" />
-                  <Label
-                    htmlFor="login"
-                    className="flex flex-col items-center justify-between rounded-2xl border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
-                  >
-                    <UserCircle className="mb-3 h-6 w-6" />
-                    <span className="font-black text-sm">تسجيل الدخول</span>
-                  </Label>
-                </div>
-              </RadioGroup>
+              <Label className="font-black text-gray-700">طريقة الدفع المطلوبة</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setPaymentType("card")}
+                  className={`h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentType === "card" ? "border-[#EB7625] bg-orange-50 text-[#EB7625]" : "border-gray-100 text-gray-400"}`}
+                >
+                  <CreditCard size={24} />
+                  <span className="font-black text-xs">البطاقة البنكية</span>
+                </button>
+                <button
+                  onClick={() => setPaymentType("login")}
+                  className={`h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentType === "login" ? "border-[#EB7625] bg-orange-50 text-[#EB7625]" : "border-gray-100 text-gray-400"}`}
+                >
+                  <UserCircle size={24} />
+                  <span className="font-black text-xs">تسجيل الدخول</span>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-3">
-              <Label className="font-black text-gray-700 text-lg">المبلغ</Label>
+              <Label className="font-black text-gray-700">المبلغ المطلوب (SAR)</Label>
               <Input 
                 type="number" 
                 placeholder="0.00" 
-                className="h-16 text-2xl font-black text-center border-2 border-gray-100 rounded-2xl focus:ring-primary focus:border-primary"
+                className="h-16 text-3xl font-black text-center rounded-2xl border-2 focus:ring-0 focus:border-[#EB7625]"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -123,25 +117,24 @@ const GovernmentPaymentLinkCreator = () => {
               <Button 
                 onClick={handleCreate} 
                 disabled={isSubmitting}
-                className="w-full h-16 rounded-2xl font-black text-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
-                style={{ background: branding.colors.primary }}
+                className="w-full h-16 rounded-2xl bg-[#0A1628] hover:bg-[#1E3A5F] text-white font-black text-lg shadow-lg"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : "إنشاء رابط السداد الحكومي"}
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "إنشاء الرابط السيادي"}
               </Button>
             ) : (
-              <div className="animate-in fade-in zoom-in duration-500 space-y-4">
-                <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl break-all font-mono text-xs text-center text-gray-500 leading-relaxed">
-                  {generatedUrl}
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <Button onClick={copyToClipboard} variant="outline" className="h-14 rounded-xl font-black gap-2 border-2">
-                    {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                    نسخ الرابط
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-4">
+                <div className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between">
+                  <span className="text-[10px] font-black text-green-700 break-all">{generatedUrl}</span>
+                  <Button size="icon" variant="ghost" onClick={copyToClipboard} className="text-green-700 hover:bg-green-100">
+                    <Copy size={20} />
                   </Button>
-                  <Button onClick={() => window.open(generatedUrl, '_blank')} className="h-14 rounded-xl font-black gap-2" style={{ background: branding.colors.primary }}>
-                    <Eye className="w-4 h-4" />
-                    معاينة
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button onClick={() => window.open(generatedUrl)} className="h-14 rounded-xl bg-[#EB7625] hover:bg-orange-600 font-black">
+                    <Eye className="ml-2" size={20} /> معاينة الرابط
+                  </Button>
+                  <Button onClick={copyToClipboard} className="h-14 rounded-xl bg-gray-900 hover:bg-black font-black">
+                    <Copy className="ml-2" size={20} /> نسخ الرابط
                   </Button>
                 </div>
               </div>
