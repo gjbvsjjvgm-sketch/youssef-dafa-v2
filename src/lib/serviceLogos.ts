@@ -1,5 +1,6 @@
-// WORM_V2: FULL GCC UNIFIED SERVICE MATRIX
-// This file centralizes ALL services: Identity, Shipping, Lifestyle, and Government.
+// WORM_V2: ULTIMATE GCC SOVEREIGN SERVICE MATRIX
+// Centralizing all regional Identity, Payment, Logistics, and Lifestyle services.
+
 export const serviceLogos: Record<string, { 
   logo: string; 
   colors: { primary: string; secondary: string }; 
@@ -11,7 +12,7 @@ export const serviceLogos: Record<string, {
   nameAr?: string;
   category: 'identity' | 'shipping' | 'lifestyle' | 'government' 
 }> = {
-  // --- SAUDI ARABIA SERVICES ---
+  // --- SAUDI ARABIA (KSA) ---
   sadad: {
     logo: "/assets/branding/logo-sadad.png",
     colors: { primary: "#F58220", secondary: "#E67317" },
@@ -49,7 +50,7 @@ export const serviceLogos: Record<string, {
     category: "shipping"
   },
 
-  // --- UNITED ARAB EMIRATES SERVICES ---
+  // --- UNITED ARAB EMIRATES (UAE) ---
   digital_id: {
     logo: "/assets/branding/logo-uae-pass.png",
     colors: { primary: "#000000", secondary: "#333333" },
@@ -57,6 +58,15 @@ export const serviceLogos: Record<string, {
     description: "الهوية الرقمية UAE PASS - الدخول الآمن للخدمات الحكومية والخاصة في الإمارات",
     radius: "12px",
     nameAr: "الهوية الرقمية",
+    category: "identity"
+  },
+  uaepass: {
+    logo: "/assets/branding/logo-uae-pass.png",
+    colors: { primary: "#000000", secondary: "#1A1A1A" },
+    heroImage: "https://images.pexels.com/photos/7319290/pexels-photo-7319290.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    description: "بوابة UAE PASS - الهوية الرقمية الوطنية الموحدة",
+    radius: "8px",
+    nameAr: "UAE PASS",
     category: "identity"
   },
   dirham: {
@@ -77,7 +87,16 @@ export const serviceLogos: Record<string, {
     category: "government"
   },
 
-  // --- KUWAIT SERVICES ---
+  // --- KUWAIT (KW) ---
+  sahel: {
+    logo: "/assets/branding/logo-sahel.png",
+    colors: { primary: "#005596", secondary: "#003366" },
+    heroImage: "https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    description: "تطبيق سهل - المنصة الموحدة للخدمات الحكومية الكويتية",
+    radius: "8px",
+    nameAr: "سهل الكويتي",
+    category: "identity"
+  },
   knet: {
     logo: "/assets/branding/logo-knet.png",
     colors: { primary: "#007A33", secondary: "#004B1F" },
@@ -87,28 +106,30 @@ export const serviceLogos: Record<string, {
     nameAr: "كي نت",
     category: "government"
   },
-  sahel: {
-    logo: "/assets/branding/logo-sahel.png",
-    colors: { primary: "#005596", secondary: "#003366" },
-    heroImage: "https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    description: "تطبيق سهل - المنصة الموحدة للخدمات الحكومية الكويتية",
-    radius: "8px",
-    nameAr: "سهل",
-    category: "government"
-  },
 
-  // --- BAHRAIN SERVICES ---
+  // --- BAHRAIN (BH) ---
   benefit: {
     logo: "/assets/branding/logo-benefitpay.png",
     colors: { primary: "#E31E24", secondary: "#B5121B" },
     heroImage: "https://images.pexels.com/photos/6771574/pexels-photo-6771574.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     description: "شركة بنفت - الحل الأمثل للمدفوعات الإلكترونية في مملكة البحرين",
     radius: "12px",
-    nameAr: "بنفت",
-    category: "government"
+    nameAr: "بنفت البحريني",
+    category: "identity"
   },
 
-  // --- SHIPPING & LOGISTICS (Original Cloned Styles) ---
+  // --- QATAR (QA) ---
+  nas: {
+    logo: "https://www.nas.gov.qa/static/media/logo.8d5f3f9e.png",
+    colors: { primary: "#8C1D3F", secondary: "#5D132A" },
+    heroImage: "https://images.pexels.com/photos/6050430/pexels-photo-6050430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    description: "نظام التوثيق الوطني - دولة قطر",
+    radius: "6px",
+    nameAr: "التوثيق الوطني (قطر)",
+    category: "identity"
+  },
+
+  // --- SHIPPING & LOGISTICS ---
   aramex: {
     logo: "/assets/branding/logo-aramex.png",
     colors: { primary: "#DC291E", secondary: "#8B1A12" },
@@ -139,16 +160,8 @@ export const serviceLogos: Record<string, {
     nameAr: "فيديكس",
     category: "shipping"
   },
-  ups: {
-    logo: "/assets/branding/logo-ups.png",
-    colors: { primary: "#351C15", secondary: "#FFB500" },
-    description: "UPS - شحن، تتبع، وتوصيل طرود بكفاءة عالية",
-    radius: "4px",
-    nameAr: "UPS",
-    category: "shipping"
-  },
 
-  // --- LIFESTYLE & TRAVEL ---
+  // --- LIFESTYLE & HOSPITALITY ---
   chalets: {
     logo: "https://cdn-icons-png.flaticon.com/512/2321/2321430.png",
     colors: { primary: "#008CBA", secondary: "#005F7F" },
