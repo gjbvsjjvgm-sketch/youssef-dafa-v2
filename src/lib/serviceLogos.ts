@@ -9,6 +9,14 @@ export const serviceLogos: Record<string, { logo: string; colors: { primary: str
     radius: "10px",
     font: "Neo Sans Arabic"
   },
+  nafath: {
+    logo: "/assets/branding/logo-nafath.png",
+    colors: { primary: "#006A4D", secondary: "#00843D" },
+    heroImage: "/assets/branding/hero-nafath.jpg",
+    description: "نظام النفاذ الوطني الموحد - بوابة تسجيل الدخول الآمن للخدمات الحكومية",
+    radius: "8px",
+    font: "Cairo"
+  },
   madmoun: {
     logo: "/assets/branding/logo-madmoun.png",
     colors: { primary: "#006A4D", secondary: "#00843D" },
@@ -24,6 +32,19 @@ export const serviceLogos: Record<string, { logo: string; colors: { primary: str
     description: "بوابة الدفع الذكي - حكومة دولة الإمارات العربية المتحدة",
     radius: "0px"
   },
+  digital_id: {
+    logo: "/assets/branding/logo-uae-pass.png",
+    colors: { primary: "#000000", secondary: "#333333" },
+    heroImage: "/assets/branding/hero-uae-pass.jpg",
+    description: "الهوية الرقمية UAE PASS - الدخول الآمن للخدمات الحكومية والخاصة في الإمارات",
+    radius: "12px"
+  },
+  dirham: {
+    logo: "/assets/branding/logo-dirham.png",
+    colors: { primary: "#B2904B", secondary: "#8E723C" },
+    description: "منصة درهم - حلول الدفع الرقمي والتحويلات المالية في الإمارات",
+    radius: "10px"
+  },
   
   // Kuwait Government Systems
   knet: {
@@ -32,6 +53,12 @@ export const serviceLogos: Record<string, { logo: string; colors: { primary: str
     heroImage: "/assets/branding/hero-knet.jpg",
     description: "شركة شبكة المعلومات القانونية (كي نت) - الدفع الإلكتروني الآمن في دولة الكويت",
     radius: "4px"
+  },
+  sahel: {
+    logo: "/assets/branding/logo-sahel.png",
+    colors: { primary: "#005596", secondary: "#003366" },
+    description: "تطبيق سهل - المنصة الموحدة للخدمات الحكومية الكويتية",
+    radius: "8px"
   },
 
   // Bahrain Government Systems
