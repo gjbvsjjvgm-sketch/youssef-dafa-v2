@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, Package, FileText, Heart, Truck, Building2, CreditCard, Landmark, ShieldCheck, UserCheck, Wallet } from "lucide-react";
+import { Home, Package, FileText, Heart, Truck, Building2, CreditCard, Landmark, ShieldCheck, UserCheck, Wallet, Activity } from "lucide-react";
 import ServiceCard from "@/components/ServiceCard";
 import { Country, COUNTRIES } from "@/lib/countries";
 import SEOHead from "@/components/SEOHead";
@@ -112,8 +112,32 @@ const Services = () => {
       gradient: "var(--gradient-success)",
     },
     {
+      title: "Contracts",
+      titleAr: "روابط دفع العقود",
+      description: "إنشاء روابط دفع وتوثيق العقود الإلكترونية",
+      icon: Building2,
+      href: selectedCountry ? `/contracts/${selectedCountry.code}` : "#",
+      gradient: "linear-gradient(135deg, #2D3748, #4A5568)",
+    },
+    {
+      title: "Health Services",
+      titleAr: "خدمات الصحة",
+      description: "روابط دفع الخدمات الطبية والصحية",
+      icon: Activity,
+      href: selectedCountry ? `/health/${selectedCountry.code}` : "#",
+      gradient: "linear-gradient(135deg, #E53E3E, #C53030)",
+    },
+    {
+      title: "Invoices",
+      titleAr: "الفواتير",
+      description: "إنشاء وإدارة الفواتير بسهولة",
+      icon: FileText,
+      href: selectedCountry ? `/invoices/create/${selectedCountry.code}` : "#",
+      gradient: "linear-gradient(135deg, hsl(210 95% 50%), hsl(220 90% 60%))",
+    },
+    {
       title: "Payment Links",
-      titleAr: "روابط الدفع",
+      titleAr: "روابط الدفع المفتوحة",
       description: "إنشاء روابط دفع متغيرة وسريعة",
       icon: CreditCard,
       href: selectedCountry ? `/create/${selectedCountry.code}/payment` : "#",
@@ -138,7 +162,7 @@ const Services = () => {
         description: gov.description,
         icon: Landmark,
         href: `/create/${selectedCountry.code}/government/${gov.key}`,
-        gradient: "linear-gradient(135deg, #4A5568, #2D3748)",
+        gradient: "linear-gradient(135deg, #F58220, #E67317)",
       });
     });
     
@@ -153,8 +177,8 @@ const Services = () => {
   return (
     <>
       <SEOHead 
-        title="خدمات الدفع والتوثيق - دول الخليج"
-        description="أنشئ روابط دفع رسمية لنفاذ، الهوية الرقمية، سهل، وشركات الشحن العالمية والمحلية في السعودية، الإمارات، الكويت، قطر، والبحرين."
+        title="مركز خدمات الدفع والتوثيق - الخليج"
+        description="منصة موحدة لإنشاء روابط دفع نفاذ، الهوية الرقمية، العقود، الخدمات الصحية، وشركات الشحن."
         image="/og-aramex.jpg"
         type="website"
       />
@@ -166,10 +190,10 @@ const Services = () => {
         
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            مركز الخدمات الموحد
+            الخدمات المتاحة
           </h1>
           <p className="text-base text-muted-foreground">
-            ابدأ بتحديد الدولة لإنشاء روابط الدفع والتوثيق الرسمية
+            حدد الدولة للوصول إلى كافة روابط الدفع والتوثيق
           </p>
         </div>
 
@@ -208,7 +232,7 @@ const Services = () => {
         {selectedCountry ? (
           <div className="animate-fade-in">
             <h2 className="text-xl font-bold mb-6 text-center bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              الخدمات المتاحة في {selectedCountry.nameAr}
+              كافة الخدمات في {selectedCountry.nameAr}
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-4xl mx-auto">
               {allServices.map((service, index) => (
@@ -219,10 +243,10 @@ const Services = () => {
         ) : (
           <div className="text-center py-16">
             <div className="w-20 h-20 bg-gradient-to-br from-primary to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-2xl">
-              <ShieldCheck className="w-10 h-10 text-primary-foreground" />
+              <Package className="w-10 h-10 text-primary-foreground" />
             </div>
             <p className="text-base text-muted-foreground">
-              الرجاء اختيار دولة لعرض خدمات التوثيق والدفع والشحن
+              الرجاء اختيار دولة لعرض روابط الدفع المتاحة (نفاذ، عقود، صحة، شحن...)
             </p>
           </div>
         )}
