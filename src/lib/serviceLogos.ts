@@ -196,3 +196,14 @@ export const serviceLogos: Record<string, {
     category: "lifestyle"
   }
 };
+
+export const getServiceBranding = (serviceName: string) => {
+  const key = serviceName.toLowerCase();
+  return serviceLogos[key] || {
+    logo: "",
+    colors: { primary: "#EF7622", secondary: "#D65C0F" },
+    heroImage: "/assets/branding/hero-payment-secure.jpg",
+    nameAr: "بوابة دفع آمنة",
+    category: "government"
+  };
+};
